@@ -7,17 +7,9 @@
 #include "driver/gpio.h"
 #include "button.h"
 
-int period = 1000;
-
-int button_num = 14; // GPIO0
-int button_en = 3; //GPIO 3 = EN
 int led = 2;
 
 int toggle = 0;
-
-int debound_buffer = 0;
-int pressed = 0;
-
 
 #define PRESSED 0
 #define RELEASE 1
@@ -30,14 +22,15 @@ void print_student_id_task(void *pvParameter) {
 
     while (true) 
     {
-        printf("1912750\n");
+        printf("1913774 - 1914213 - 1912750 - 1915677\n");
         if (toggle == 0) {
             gpio_set_level(led, 0);
         } else {
             gpio_set_level(led, 1);
         }
         toggle = 1 - toggle;
-        vTaskDelay(period / portTICK_RATE_MS);
+        // printf("%d",gpio_get_level(0));
+        vTaskDelay(1000 / portTICK_RATE_MS);
     }
 
     vTaskDelete(NULL);
@@ -66,21 +59,19 @@ void print_esp32_task_state_machine(void *pvParameter) {
 }
 
 
+void gpio_init() {
+    gpio_set_direction(led, GPIO_MODE_OUTPUT);
+}
+
 
 void app_main(void)
 {
-   gpio_reset_pin(button_num);
-   gpio_set_direction(button_num, GPIO_MODE_INPUT);
-    // 2 dong nay la can thiet de gpio hoat dong!! :o :o :o why, wtf??
-    // Configure GPIO pull-up/pull-down resistors.
-   gpio_set_pull_mode(button_num, GPIO_PULLUP_ONLY);
+    
+    init_button();
+    gpio_init();
 
-   gpio_set_direction(led, GPIO_MODE_OUTPUT);
-
-
-   xTaskCreate(&print_student_id_task, "sync", 2048, NULL, 5, NULL);
-   xTaskCreate(&print_esp32_task_state_machine, "async", 2048, NULL, 10, NULL);
-   xTaskCreate(&read_button_task, "readbtn", 2048, NULL, 15, NULL);
-
+    xTaskCreate(&print_student_id_task, "sync", 2048, NULL, 5, NULL);
+    xTaskCreate(&print_esp32_task_state_machine, "async", 2048, NULL, 10, NULL);
+    xTaskCreate(&read_button_task, "readbtn", 2048, NULL, 15, NULL);
 
 }

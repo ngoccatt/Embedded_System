@@ -7,20 +7,15 @@
 #define WAIT_TIME 			2
 #define DURATION_1_SECOND 	100
 
-#define BUTTON_PORT		GPIOA
-#define PRESS			0
-#define RELEASE 		1
+#define BUTTON_PRESSED			0
+#define BUTTON_RELEASED 		1
 
-void read_button();
+void read_button_task();
+void init_button();
 
 int getButtonValue(int num_of_button);
 
 int getFlagButtonPress1s(int num_of_button);
-
-//this flag can only be pull down if button is released.
-void setFlagButtonDelay(int num_of_button);
-
-int getFlagButtonDelay(int num_of_button);
 
 
 #endif /* INC_INPUT_READING_H_ */
