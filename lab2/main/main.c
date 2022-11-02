@@ -8,8 +8,11 @@
 #include "button.h"
 
 int led = 2;
+#define LED1 14
+#define LED2 27
 
 int toggle = 0;
+int toggle4 = 0;
 
 #define PRESSED 0
 #define RELEASE 1
@@ -61,6 +64,8 @@ void print_esp32_task_state_machine(void *pvParameter) {
 
 void gpio_init() {
     gpio_set_direction(led, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(LED2, GPIO_MODE_OUTPUT);
 }
 
 
@@ -69,6 +74,14 @@ void app_main(void)
     
     init_button();
     gpio_init();
+    /*
+    14 - 0, 27 = 1 -> green
+    14 = 1, 27 = 0 -> red
+    14 = 1, 27 = 1 -> yellow
+    14 = 0, 27 = 0 -> off.
+    */
+    gpio_set_level(LED1, 0);
+    gpio_set_level(LED2, 0);
 
     xTaskCreate(&print_student_id_task, "sync", 2048, NULL, 5, NULL);
     xTaskCreate(&print_esp32_task_state_machine, "async", 2048, NULL, 10, NULL);
