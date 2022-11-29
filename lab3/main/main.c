@@ -92,9 +92,9 @@ void app_main(void)
     xTaskCreatePinnedToCore(&task1, "sync", 2048, NULL, 1, NULL, 0);
 
     //for preemtive
-    xTaskCreatePinnedToCore(&task2, "sync2", 2048, NULL, 1, NULL, 0);
+    // xTaskCreatePinnedToCore(&task2, "sync2", 2048, NULL, 1, NULL, 0);
     //for cooperative
-    // xTaskCreatePinnedToCore(&task2, "sync2", 2048, NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(&task2, "sync2", 2048, NULL, 2, NULL, 0);
 
     xTaskCreatePinnedToCore(&even_higher_priority_task, "high", 2048, NULL, 3, NULL, 0);
 

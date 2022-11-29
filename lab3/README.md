@@ -4,17 +4,46 @@ Well, u know, Vanilla FreeRTOS is design to work for single core, that's why the
 
 And that's why, when we creating tasks, we PIN it to core 0. I don't know why, but pin in core 0 produce great result, while pin it to core 1 just produce weird output. Maybe core 1 is used for something that involve interrupt?
 
+vCreateTask() simply call vCreateTaskPinToCore(tskNO_AFFINITY.) in esp32
+
+# Tasks #
+## Creation ##
+Vanilla FreeRTOS provides the following functions to create a task:
+
+xTaskCreate() creates a task. The task’s memory is dynamically allocated
+
+xTaskCreateStatic() creates a task. The task’s memory is statically allocated (i.e., provided by the user)
+
+However, in an SMP system, tasks need to be assigned a particular affinity. Therefore, ESP-IDF provides a PinnedToCore version of Vanilla FreeRTOS’s task creation functions:
+
+xTaskCreatePinnedToCore() creates a task with a particular core affinity. The task’s memory is dynamically allocated.
+
+xTaskCreateStaticPinnedToCore() creates a task with a particular core affinity. The task’s memory is statically allocated (i.e., provided by the user)
+
+The PinnedToCore versions of the task creation functions API differ from their vanilla counter parts by having an extra xCoreID parameter that is used to specify the created task’s core affinity. The valid values for core affinity are:
+
+0 which pins the created task to CPU0
+
+1 which pins the created task to CPU1
+
+tskNO_AFFINITY which allows the task to be run on both CPUs
+
+Note that ESP-IDF FreeRTOS still supports the vanilla versions of the task creation functions. However, they have been modified to simply call their PinnedToCore counterparts with tskNO_AFFINITY.
+
 In this lab, we try to make some example for:
 
-Preemtive Scheduling with Time slicing 
+### Preemtive Scheduling with Time slicing ###
+
     Preemtive: Task that have higher priority will "preempt" task with lower priority every "tick" happen, when the task with higher priority is ready
     Time slicing: when 2 or more tasks that have the same priority, "round-robin" will be use so that these task will run concurrently ON ONE CORE. IF THERE'RE MULTIPLE CORE, it's gonna be a different story. OS will choose and let 2 of the task run in parallel, instead of doing round-robin.
 
-Preemtive Scheduling without time slicing:
+### Preemtive Scheduling without time slicing: ###
+
     No more roundrobin. If 2 or more task have the same priority, they'll have to wait for the other to complete (either yield or delay (blocked)) then they can join in the CPU to continue working.
     It's still preemtive. If there's a task with higher priority is ready, that task will preempt the current running task.
 
-Cooperative Scheduling:
+### Cooperative Scheduling: ###
+
     No preemtive, no priority, no roundrobin. FCFS, I'm done u next.
 
 ## How to use 
