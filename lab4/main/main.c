@@ -16,7 +16,16 @@ struct QueueData {
     char reject;
 };
 
+struct TaskType {
+    int taskID;
+	char taskName[20];
+};
+
 QueueHandle_t xQueue;
+
+struct TaskType Led = {.taskName = "led", .taskID = 0};
+struct TaskType Pump = {.taskName = "pump", .taskID = 1};
+struct TaskType Fan = {.taskName = "fan", .taskID = 2};
 
 void xQueue_manager(void * pvParameter) {
     // create a queue, each slot contant a pointer, because arcording to the website,
@@ -86,75 +95,18 @@ void recepiton_Task(void * pvParameter) {
     vTaskDelete(NULL);
 }
 
-void led_Task(void* pvParameter) {
+void active_Task(void* pvParameter) {
     for (; ;) {
+        struct TaskType *task = (struct TaskType *)pvParameter;
         struct QueueData *pRxMessage;
         if (xQueue != NULL) {
             if (xQueueReceive(xQueue, &pRxMessage, (TickType_t)10) == pdPASS) {
-                if (pRxMessage->dataID == 0) {
+                if (pRxMessage->dataID == task->taskID) {
                     printf("%s\n", pRxMessage->message);
                     // always remember to free the memory when done.
                     free(pRxMessage);
                 } else {
-                    printf("led: received %s, but it's not my task\n", pRxMessage->message);
-                    if (pRxMessage->reject < 3) {
-                        pRxMessage->reject++;
-                        xQueueSendToFront(xQueue, (void *)&pRxMessage, (TickType_t)10);
-                    } else {
-                        printf("This task %s is rejected %d times, skiping the task\n", pRxMessage->message, pRxMessage->reject);
-                        free(pRxMessage);
-                    }
-                }
-            } else {
-                // printf("led: queue empty\n");
-            }
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-    vTaskDelete(NULL);
-}
-
-void pump_Task(void* pvParameter) {
-    for (; ;) {
-        struct QueueData *pRxMessage;
-        if (xQueue != NULL) {
-            if (xQueueReceive(xQueue, &pRxMessage, (TickType_t)10) == pdPASS) {
-                if (pRxMessage->dataID == 1) {
-                    printf("%s\n", pRxMessage->message);
-                    // always remember to free the memory when done.
-                    free(pRxMessage);
-                } else {
-                    printf("pump: received %s, but it's not my task\n", pRxMessage->message);
-                    if (pRxMessage->reject < 3) {
-                        pRxMessage->reject++;
-                        xQueueSendToFront(xQueue, (void *)&pRxMessage, (TickType_t)10);
-                    } else {
-                        printf("This task %s is rejected %d times, skiping the task\n", pRxMessage->message, pRxMessage->reject);
-                        free(pRxMessage);
-                    }
-                }
-            } else {
-                // printf("pump: queue empty\n");
-            }
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-    vTaskDelete(NULL);
-}
-
-void fan_Task(void* pvParameter) {
-    for (; ;) {
-        struct QueueData *pRxMessage;
-        if (xQueue != NULL) {
-            if (xQueueReceive(xQueue, &pRxMessage, (TickType_t)10) == pdPASS) {
-                if (pRxMessage->dataID == 2) {
-                    printf("%s\n", pRxMessage->message);
-                    // always remember to free the memory when done.
-                    free(pRxMessage);
-                } else {
-                    printf("fan: received %s, but it's not my task\n", pRxMessage->message);
+                    printf("%s: received %s, but it's not my task\n",task->taskName, pRxMessage->message);
                     if (pRxMessage->reject < 3) {
                         pRxMessage->reject++;
                         xQueueSendToFront(xQueue, (void *)&pRxMessage, (TickType_t)10);
@@ -173,13 +125,23 @@ void fan_Task(void* pvParameter) {
     vTaskDelete(NULL);
 }
 
-
-
 void app_main(void)
 {
+    // these are just LOCAL VARIABLE, so it will eventually disapear. If we pass these
+    // variable to the task, task will have random value, and is a total mess.
+    // app_main is just a function. every variables here are all locals
+    // you can try enable this and disable global variable, run and see a mess !
+    // struct TaskType Led = {.taskName = "led", .taskID = 0};
+    // struct TaskType Pump = {.taskName = "pump", .taskID = 1};
+    // struct TaskType Fan = {.taskName = "fan", .taskID = 2};
+    
     xTaskCreate(&xQueue_manager, "queue_manage", 2048, NULL, 10, NULL);
     xTaskCreate(&recepiton_Task, "rec", 2048, NULL, 10, NULL);
-    xTaskCreate(&led_Task, "led", 2048, NULL, 10, NULL);
-    xTaskCreate(&pump_Task, "pump", 2048, NULL, 10, NULL);
-    xTaskCreate(&fan_Task, "fan", 2048, NULL, 10, NULL);
+    // incase of xTaskCreate, parameter pass to the task must be stable and 
+    // exist for the entire program. That's why we
+    // must make sure that variable always exist (one solution is using global variable!)
+    // read here, carefully: https://esp32.com/viewtopic.php?t=1892
+    xTaskCreate(&active_Task, "led", 2048, (void *)&Led, 10, NULL);
+    xTaskCreate(&active_Task, "pump", 2048, (void *)&Pump, 10, NULL);
+    xTaskCreate(&active_Task, "fan", 2048, (void *)&Fan, 10, NULL);
 }
