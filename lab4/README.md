@@ -18,32 +18,12 @@ you hear me, if you pass parameter to a task when creating task, that variable s
 One solution is to make that variable global.  
 If you simply declare that variable in the main function, then it's just a local variable and it may get destroyed, which give incorrect result when passed to the task.  
 ## Run Result ##
-pump: received LED, but it's not my task  
-fan: received LED, but it's not my task  
-pump: received LED, but it's not my task  
-LED  
-fan: received noob, but it's not my task  
-pump: received noob, but it's not my task  
-led: received noob, but it's not my task  
-fan: received noob, but it's not my task  
-This task noob is rejected 3 times, skiping the task  
-PUMP  
-pump: received LED, but it's not my task  
-LED  
-pump: received LED, but it's not my task  
-LED  
-fan: received noob, but it's not my task  
-pump: received noob, but it's not my task  
-led: received noob, but it's not my task  
-fan: received noob, but it's not my task  
-This task noob is rejected 3 times, skiping the task  
-pump: received noob, but it's not my task  
 led: received noob, but it's not my task  
 fan: received noob, but it's not my task  
 pump: received noob, but it's not my task  
 This task noob is rejected 3 times, skiping the task  
 led: received PUMP, but it's not my task  
-fan: received PUMP, but it's not my task  
+fan: received PUMP, but it's not my task  3
 PUMP  
 led: received PUMP, but it's not my task  
 fan: received PUMP, but it's not my task  
@@ -54,28 +34,56 @@ LED
 led: received noob, but it's not my task  
 fan: received noob, but it's not my task  
 pump: received noob, but it's not my task  
-led: received noob, but it's not my task  
 This task noob is rejected 3 times, skiping the task  
-fan: received LED, but it's not my task  
-pump: received LED, but it's not my task  
 LED  
+led: received noob, but it's not my task  
 fan: received noob, but it's not my task  
 pump: received noob, but it's not my task  
-led: received noob, but it's not my task  
-fan: received noob, but it's not my task  
 This task noob is rejected 3 times, skiping the task  
-pump: received LED, but it's not my task  
 LED  
 fan: received PUMP, but it's not my task  
 PUMP  
 fan: received noob, but it's not my task  
 pump: received noob, but it's not my task  
 led: received noob, but it's not my task  
-fan: received noob, but it's not my task  
 This task noob is rejected 3 times, skiping the task  
+fan: received LED, but it's not my task  
 pump: received LED, but it's not my task  
 LED  
+fan: received LED, but it's not my task  
 pump: received LED, but it's not my task  
 LED  
+FAN  
+fan: received LED, but it's not my task  
+pump: received LED, but it's not my task  
+LED  
+fan: received PUMP, but it's not my task  
+PUMP  
+fan: received LED, but it's not my task  
+pump: received LED, but it's not my task  
+LED  
+fan: received noob, but it's not my task  
+pump: received noob, but it's not my task  
+led: received noob, but it's not my task  
+This task noob is rejected 3 times, skiping the task  
+fan: received PUMP, but it's not my task  
+PUMP  
+fan: received noob, but it's not my task  
+pump: received noob, but it's not my task  
+led: received noob, but it's not my task  
+This task noob is rejected 3 times, skiping the task  
+fan: received LED, but it's not my task  
+pump: received LED, but it's not my task  
+LED  
+fan: received PUMP, but it's not my task  
+PUMP  
+led: received FAN, but it's not my task  
+FAN  
+led: received FAN, but it's not my task  
+FAN  
 pump: received FAN, but it's not my task  
 led: received FAN, but it's not my task  
+FAN  
+pump: received LED, but it's not my task  
+LED  
+

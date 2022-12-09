@@ -11,7 +11,7 @@
 #include <string.h>
 
 struct QueueData {
-    int dataID;
+    int requestID;
     char message[2048];
 };
 
@@ -35,11 +35,11 @@ void xQueue_manager(void * pvParameter) {
             for(int i = 0; i < 1000000; i++) {
                 //if this task is stop, that mean we can't no longer malloc memory, that's why pData = NULL.
                 // If I don't check this condition and break it, this will cause Fatal Error: Store Prohibited, because
-                // since pData is NULL, access to pData->dataID is not valid (access NULL pointer) and crash the program.
+                // since pData is NULL, access to pData->requestID is not valid (access NULL pointer) and crash the program.
             }
             break;
         }
-        pData->dataID = 1;
+        pData->requestID = 1;
         strcpy(pData->message, "Task1");
         //&pData -> lay dia chi cua con tro pData, o nho tai dia chi nay dang chua gia tri tro? toi struct QueueData
         if (xQueueSend(xQueue, (void *)&pData , (TickType_t)10) == errQUEUE_FULL) {

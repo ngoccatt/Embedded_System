@@ -11,7 +11,7 @@
 #include <string.h>
 
 struct QueueData {
-    int dataID;
+    int requestID;
     char message[20];
     char reject;
 };
@@ -54,22 +54,22 @@ void recepiton_Task(void * pvParameter) {
         if (xData != NULL) {
             switch(ranJob) {
                 case 0:
-                    xData->dataID = 0;
+                    xData->requestID = 0;
                     strcpy(xData->message, "LED");
                     xData->reject = 0;
                 break;
                 case 1:
-                    xData->dataID = 1;
+                    xData->requestID = 1;
                     strcpy(xData->message, "PUMP");
                     xData->reject = 0;
                 break;
                 case 2:
-                    xData->dataID = 2;
+                    xData->requestID = 2;
                     strcpy(xData->message, "FAN");
                     xData->reject = 0;
                 break;
                 case 3:
-                    xData->dataID = 99;
+                    xData->requestID = 99;
                     strcpy(xData->message, "noob");
                     xData->reject = 0;
                 break;
@@ -101,17 +101,17 @@ void active_Task(void* pvParameter) {
         struct QueueData *pRxMessage;
         if (xQueue != NULL) {
             if (xQueueReceive(xQueue, &pRxMessage, (TickType_t)10) == pdPASS) {
-                if (pRxMessage->dataID == task->taskID) {
+                if (pRxMessage->requestID == task->taskID) {
                     printf("%s\n", pRxMessage->message);
                     // always remember to free the memory when done.
                     free(pRxMessage);
                 } else {
                     printf("%s: received %s, but it's not my task\n",task->taskName, pRxMessage->message);
-                    if (pRxMessage->reject < 3) {
+                    if (pRxMessage->reject < 2) {
                         pRxMessage->reject++;
                         xQueueSendToFront(xQueue, (void *)&pRxMessage, (TickType_t)10);
                     } else {
-                        printf("This task %s is rejected %d times, skiping the task\n", pRxMessage->message, pRxMessage->reject);
+                        printf("This task %s is rejected %d times, skiping the task\n", pRxMessage->message, (pRxMessage->reject + 1));
                         free(pRxMessage);
                     }
                 }
