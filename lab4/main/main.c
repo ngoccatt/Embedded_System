@@ -21,6 +21,8 @@ struct TaskType {
 	char taskName[20];
 };
 
+int TaskCount = 0;
+
 QueueHandle_t xQueue;
 
 struct TaskType Led = {.taskName = "led", .taskID = 0};
@@ -96,6 +98,7 @@ void recepiton_Task(void * pvParameter) {
 }
 
 void active_Task(void* pvParameter) {
+    TaskCount++;
     for (; ;) {
         struct TaskType *task = (struct TaskType *)pvParameter;
         struct QueueData *pRxMessage;
@@ -107,7 +110,7 @@ void active_Task(void* pvParameter) {
                     free(pRxMessage);
                 } else {
                     printf("%s: received %s, but it's not my task\n",task->taskName, pRxMessage->message);
-                    if (pRxMessage->reject < 2) {
+                    if (pRxMessage->reject < TaskCount - 1) {
                         pRxMessage->reject++;
                         xQueueSendToFront(xQueue, (void *)&pRxMessage, (TickType_t)10);
                     } else {
